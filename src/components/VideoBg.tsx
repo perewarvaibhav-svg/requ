@@ -8,6 +8,7 @@ export default function VideoBg() {
         muted
         loop
         playsInline
+        preload="auto"
       >
         <source src="/VIDEO1.mp4" type="video/mp4" />
       </video>
