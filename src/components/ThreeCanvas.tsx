@@ -9,8 +9,6 @@ export default function ThreeCanvas() {
         if (!canvasRef.current) return;
 
         const canvas = canvasRef.current;
-
-        // 4K Rendering setup with high fidelity antialiasing
         const renderer = new THREE.WebGLRenderer({
             canvas,
             alpha: true,
@@ -24,8 +22,8 @@ export default function ThreeCanvas() {
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 100);
 
-        // ── Upscaled Particle field (4K Density) ──
-        const COUNT = 35000; // Large increase for 4K "organic" feel
+        // Optimized Particle field - Balanced for 4K without looking like pixels
+        const COUNT = 12000;
         const positions = new Float32Array(COUNT * 3);
         const sizes = new Float32Array(COUNT);
         const colors = new Float32Array(COUNT * 3);
@@ -33,16 +31,14 @@ export default function ThreeCanvas() {
 
         for (let i = 0; i < COUNT; i++) {
             const i3 = i * 3;
-            // Spread them slightly wider for 4K canvas
             positions[i3] = (Math.random() - 0.5) * 600;
             positions[i3 + 1] = (Math.random() - 0.5) * 600;
             positions[i3 + 2] = (Math.random() - 0.5) * 400;
 
-            // Fine-tuned sizing for crisp look
-            sizes[i] = Math.random() * 1.5 + 0.3;
+            // Slightly larger/softer points
+            sizes[i] = Math.random() * 3.0 + 1.0;
             randomness[i] = Math.random();
 
-            // Colors maintained exactly as before (Amber, Emerald, Deep Blue)
             const rand = Math.random();
             if (rand < 0.2) {
                 colors[i3] = 1.0; colors[i3 + 1] = 0.8; colors[i3 + 2] = 0.0; // Amber
@@ -80,17 +76,15 @@ export default function ThreeCanvas() {
           vColor = color;
           vec3 pos = position;
 
-          // 60fps movement logic maintained
-          float time = uTime * (0.1 + aRandom * 0.05);
-          pos.x += sin(time + position.y * 0.01) * 20.0 * aRandom;
-          pos.y += cos(time + position.x * 0.01) * 15.0 * aRandom;
+          float time = uTime * (0.05 + aRandom * 0.05);
+          pos.x += sin(time + position.y * 0.01) * 15.0 * aRandom;
+          pos.y += cos(time + position.x * 0.01) * 10.0 * aRandom;
 
           vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
-          gl_PointSize = size * uPixelRatio * (120.0 / -mvPos.z);
+          gl_PointSize = size * uPixelRatio * (150.0 / -mvPos.z);
 
-          float dist = length(pos.xy) / 300.0;
-          vAlpha = 1.0 - smoothstep(0.4, 1.5, dist);
-          vAlpha *= (0.3 + 0.7 * sin(uTime * 1.5 + aRandom * 50.0));
+          // Uniform alpha for clarity, slight flicker
+          vAlpha = (0.2 + 0.5 * sin(uTime * 1.5 + aRandom * 50.0));
 
           gl_Position = projectionMatrix * mvPos;
         }
@@ -102,23 +96,15 @@ export default function ThreeCanvas() {
         void main() {
           float d = distance(gl_PointCoord, vec2(0.5));
           if (d > 0.5) discard;
-          float strength = 0.08 / d;
-          gl_FragColor = vec4(vColor * strength, vAlpha * (1.0 - d * 2.0));
+          // Softer falloff to avoid hard pixel appearance
+          float strength = 0.1 / d; 
+          gl_FragColor = vec4(vColor * strength, vAlpha * (1.0 - d * 2.5));
         }
       `,
         });
 
         const particles = new THREE.Points(geo, mat);
         scene.add(particles);
-
-        const onMouseMove = (e: MouseEvent) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 10;
-            const y = -(e.clientY / window.innerHeight - 0.5) * 8;
-            camera.position.x += (x - camera.position.x) * 0.05;
-            camera.position.y += (y - camera.position.y) * 0.05;
-            camera.lookAt(0, 0, 0);
-        };
-        window.addEventListener("mousemove", onMouseMove);
 
         const onResize = () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -131,17 +117,15 @@ export default function ThreeCanvas() {
         let time = 0;
         const animate = () => {
             frameId = requestAnimationFrame(animate);
-            // requestAnimationFrame naturally targets 60fps or the screen's refresh rate
             time += 0.008;
             mat.uniforms.uTime.value = time;
-            particles.rotation.y = time * 0.03;
+            particles.rotation.y = time * 0.02;
             renderer.render(scene, camera);
         };
         animate();
 
         return () => {
             cancelAnimationFrame(frameId);
-            window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("resize", onResize);
             renderer.dispose(); geo.dispose(); mat.dispose();
         };
@@ -151,7 +135,7 @@ export default function ThreeCanvas() {
         <canvas
             ref={canvasRef}
             id="three-canvas"
-            style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", opacity: 0.6 }}
+            style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none", opacity: 0.5 }}
         />
     );
 }
