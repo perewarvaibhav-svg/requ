@@ -3,11 +3,12 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function EligibilitySection() {
-    const linesRef = useRef([]);
+    const linesRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
-        // Reveal lines one by one
-        gsap.fromTo(linesRef.current,
+        // Filter out any potential nulls before animation
+        const validLines = linesRef.current.filter(el => el !== null);
+        gsap.fromTo(validLines,
             { opacity: 0, x: -10 },
             {
                 opacity: 1,
@@ -57,15 +58,15 @@ export default function EligibilitySection() {
                                 <span style={{ marginLeft: "1rem", color: "var(--text-muted)", fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>eligibility_audit.sh</span>
                             </div>
                             <div style={{ padding: "0 1.5rem 1.5rem 1.5rem" }}>
-                                <div ref={el => linesRef.current[0] = el} className="terminal-line"><span className="cmd">root@agrisaathi:~$</span> analyze_profile --farmer_id=UP4102</div>
-                                <div ref={el => linesRef.current[1] = el} className="terminal-line">[SYSTEM] Fetching land records for district: Gorakhpur</div>
-                                <div ref={el => linesRef.current[2] = el} className="terminal-line ok">[OK] Land area: 2.1 hectares (Small/Marginal Category)</div>
-                                <div ref={el => linesRef.current[3] = el} className="terminal-line">[SYSTEM] Cross-referencing PM-KISAN database...</div>
-                                <div ref={el => linesRef.current[4] = el} className="terminal-line ok">[OK] Active beneficiary: YES</div>
-                                <div ref={el => linesRef.current[5] = el} className="terminal-line">[SYSTEM] Checking KCC Eligibility...</div>
-                                <div ref={el => linesRef.current[6] = el} className="terminal-line out">[FOUND] Potential credit limit increase: ₹45,000</div>
-                                <div ref={el => linesRef.current[7] = el} className="terminal-line out">[ALERT] Overdue interest subvention pending correction</div>
-                                <div ref={el => linesRef.current[8] = el} className="terminal-line"><span className="cmd">root@agrisaathi:~$</span> <span className="cursor-blink"></span></div>
+                                <div ref={el => { linesRef.current[0] = el; }} className="terminal-line"><span className="cmd">root@agrisaathi:~$</span> analyze_profile --farmer_id=UP4102</div>
+                                <div ref={el => { linesRef.current[1] = el; }} className="terminal-line">[SYSTEM] Fetching land records for district: Gorakhpur</div>
+                                <div ref={el => { linesRef.current[2] = el; }} className="terminal-line ok">[OK] Land area: 2.1 hectares (Small/Marginal Category)</div>
+                                <div ref={el => { linesRef.current[3] = el; }} className="terminal-line">[SYSTEM] Cross-referencing PM-KISAN database...</div>
+                                <div ref={el => { linesRef.current[4] = el; }} className="terminal-line ok">[OK] Active beneficiary: YES</div>
+                                <div ref={el => { linesRef.current[5] = el; }} className="terminal-line">[SYSTEM] Checking KCC Eligibility...</div>
+                                <div ref={el => { linesRef.current[6] = el; }} className="terminal-line out">[FOUND] Potential credit limit increase: ₹45,000</div>
+                                <div ref={el => { linesRef.current[7] = el; }} className="terminal-line out">[ALERT] Overdue interest subvention pending correction</div>
+                                <div ref={el => { linesRef.current[8] = el; }} className="terminal-line"><span className="cmd">root@agrisaathi:~$</span> <span className="cursor-blink"></span></div>
                             </div>
                         </div>
                     </div>
