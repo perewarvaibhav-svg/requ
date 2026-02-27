@@ -81,9 +81,20 @@ body {
     height: 100%;
     object-fit: cover;
     opacity: 1;
-    filter: none;
-    transform: translateZ(0);
-    will-change: transform;
+    /* Ultra-Sharp 4K Optimization */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: contrast(1.08) brightness(1.02) saturate(1.05);
+    transform: scale(1.005);
+    will-change: transform, filter;
+}
+
+@media (min-width: 1440px) {
+    .video-bg-wrapper video {
+        image-rendering: auto;
+        /* Allow high-res assets to render naturally */
+        filter: contrast(1.1);
+    }
 }
 
 .video-bg-overlay {
@@ -91,6 +102,9 @@ body {
     inset: 0;
     pointer-events: none;
     background: transparent;
+    /* High-frequency micro-dithering to trick the eye into seeing more detail */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='sharpen'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23sharpen)'/%3E%3C/svg%3E");
+    opacity: 0.04;
 }
 
 /* ══════════════════════════════════════
