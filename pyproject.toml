@@ -1,0 +1,25 @@
+[project]
+name = "agrisaathi"
+version = "0.1.0"
+description = "AgriSaathi AI Core Engine"
+requires-python = "==3.12.*"
+dependencies = [
+    "fastapi",
+    "scikit-learn",
+    "pandas",
+    "numpy",
+    "supabase",
+    "joblib",
+    "deep-translator",
+    "requests",
+    "httpx",
+    "pydantic-settings",
+    "twilio",
+    "sentinelhub",
+    "gTTS",
+    "python-dotenv",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
