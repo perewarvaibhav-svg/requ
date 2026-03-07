@@ -35,7 +35,7 @@ except ImportError:
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -629,6 +629,7 @@ def _detect_commodity(text: str) -> Optional[str]:
 
 @app.post("/api/chat")
 def ai_chat(req: ChatRequest):
+    print(f"[BACKEND] Received chat request: {req.message[:50]}...")
     """
     Intelligent chat endpoint that:
     1. Detects if user is asking about market prices - injects REAL data context
